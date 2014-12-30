@@ -9,8 +9,9 @@ A simple request mocker that caches requests to files.
 Usage
 -----
 
-The example below will put the content of fixtures/example.com
-into the body of the request and if it does not exist. ::
+The example below will put the content of fixtures/example.com.txt
+into the body of the request and if it does not exist the content
+will be downloaded and stored in fixtures/example.com.txt. ::
 
     @rmoq.activate()
     def test_remote_call():
