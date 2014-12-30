@@ -28,6 +28,16 @@ The example below works as the one above it just uses the given path
         assert response.body == 'Example'
 
 
+It can also be used in a with statement ::
+
+    def test_remote_call():
+        with rmoq.Mock():
+            response = requests.get('http://example.com')
+            assert response.body == 'Example'
+
+The mock object can also take a path as an argument.
+
+
 ----------------------
 
 MIT © Rolf Erik Lekang

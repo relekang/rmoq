@@ -18,6 +18,10 @@ else:
 class Mock(object):
     path = 'fixtures'
 
+    def __init__(self, path=None):
+        if path:
+            self.path = path
+
     def __enter__(self):
         def on_send(session, request, *args, **kwargs):
             return self.on_request(session, request, *args, **kwargs)

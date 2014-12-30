@@ -32,7 +32,8 @@ class MockTestCase(unittest.TestCase):
         def perform_requests():
             first_timedelta, first_response = timer(requests.get, 'http://rolflekang.com')
             self.assertTrue(
-                os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
+                os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt'))
+            )
             last_timedelta, last_response = timer(requests.get, 'http://rolflekang.com')
             self.assertGreater(first_timedelta, last_timedelta)
             self.assert_response(first_response)
@@ -47,6 +48,18 @@ class MockTestCase(unittest.TestCase):
             requests.get('http://rolflekang.com/feed.xml')
 
         perform_requests()
+        self.assertTrue(
+            os.path.exists(os.path.join(os.getcwd(), 'path/rolflekang.com_feed.xml.txt'))
+        )
+
+    def test_with_statements(self):
+        with rmoq.Mock():
+            requests.get('http://rolflekang.com/feed.xml')
+        self.assertTrue(
+            os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com_feed.xml.txt'))
+        )
+        with rmoq.Mock('path'):
+            requests.get('http://rolflekang.com/feed.xml')
         self.assertTrue(
             os.path.exists(os.path.join(os.getcwd(), 'path/rolflekang.com_feed.xml.txt'))
         )
