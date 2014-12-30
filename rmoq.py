@@ -10,9 +10,20 @@ from requests.packages.urllib3 import HTTPResponse
 if six.PY3:
     from unittest import mock
     from io import BytesIO as BufferIO
+
+    def prepare_for_write(value, charset='utf-8', errors='ignore'):
+        if isinstance(value, bytes):
+            return value.decode('utf-8')
+        return value
+
 else:
     import mock
     from six import StringIO as BufferIO
+
+    def prepare_for_write(value, charset='utf-8', errors='ignore'):
+        if isinstance(value, unicode):
+            return value.encode(charset, errors)
+        return unicode(value, errors=errors).encode(charset)
 
 
 class Mock(object):
@@ -86,7 +97,7 @@ class Mock(object):
 
         with open(path, 'w') as f:
             f.write('{}\n'.format(content_type))
-            f.write(content)
+            f.write(prepare_for_write(content))
 
 
 _mock = Mock()
