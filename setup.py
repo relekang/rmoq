@@ -1,4 +1,11 @@
+import codecs
+from os import path
 from setuptools import setup
+
+
+def read(*parts):
+    file_path = path.join(path.dirname(__file__), *parts)
+    return codecs.open(file_path, encoding='utf-8').read()
 
 setup(
     name='rmoq',
@@ -7,6 +14,7 @@ setup(
     author='Rolf Erik Lekang',
     author_email='me@rolflekang.com',
     description='A simple request-mocker that will download',
+    long_description=read('README.rst'),
     py_modules=['rmoq'],
     license='MIT',
     include_package_data=True,
