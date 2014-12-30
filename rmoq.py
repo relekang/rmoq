@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import os
 import re
 import six
@@ -63,7 +64,7 @@ class Mock(object):
 
     @staticmethod
     def _get_filename(url):
-        return re.sub(r'/$', '', re.sub(r'https?://', '', url)).replace('/', '_')
+        return '{}.txt'.format(re.sub(r'/$', '', re.sub(r'https?://', '', url)).replace('/', '_'))
 
     @staticmethod
     def _read_body_from_file(path):
@@ -72,7 +73,6 @@ class Mock(object):
             content_type = content.split('\n')[0]
             content = '\n'.join(content.split('\n')[1:])
             return content_type, content.encode('utf-8')
-
 
     @staticmethod
     def _write_body_to_file(path, content, content_type):
