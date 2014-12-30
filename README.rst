@@ -3,8 +3,14 @@ rmoq
 
 |frigg|
 
-A simple request mocker that caches requests to files.
+A simple request mocker that caches requests responses to files.
 
+Installation
+------------
+
+Install it from pip with: ::
+
+    pip install rmoq
 
 Usage
 -----
