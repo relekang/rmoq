@@ -8,7 +8,7 @@ A simple request mocker that caches requests responses to files.
 Installation
 ------------
 
-Install it from pip with: ::
+Install it with pip: ::
 
     pip install rmoq
 
