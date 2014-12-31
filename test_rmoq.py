@@ -64,6 +64,17 @@ class MockTestCase(unittest.TestCase):
             os.path.exists(os.path.join(os.getcwd(), 'path/rolflekang.com_feed.xml.txt'))
         )
 
+    def test_class_decorator(self):
+        @rmoq.activate()
+        class A(object):
+            def perform_requests(self):
+                requests.get('http://rolflekang.com')
+
+        a = A()
+        self.assertTrue(isinstance(a, A))
+        a.perform_requests()
+        self.assertTrue(os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
+
     def test_get_filename(self):
         self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com'), 'rolflekang.com.txt')
         self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/'), 'rolflekang.com.txt')

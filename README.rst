@@ -15,6 +15,8 @@ Install it with pip: ::
 Usage
 -----
 
+**Function decorator**
+
 The example below will put the content of fixtures/example.com.txt
 into the body of the request and if it does not exist the content
 will be downloaded and stored in fixtures/example.com.txt. ::
@@ -34,6 +36,8 @@ The example below works as the one above it just uses the given path
         assert response.body == 'Example'
 
 
+**With statements**
+
 It can also be used in a with statement ::
 
     def test_remote_call():
@@ -42,6 +46,16 @@ It can also be used in a with statement ::
             assert response.body == 'Example'
 
 The mock object can also take a path as an argument.
+
+**Class decorator**
+
+The decorator will also work for classes, which means you can decorate a whole test-case: ::
+
+    @rmoq.activate()
+    class RemoteTestCase(unittest.TestCase)
+        def test_remote_call():
+            response = requests.get('http://example.com')
+            assert response.body == 'Example'
 
 
 ----------------------

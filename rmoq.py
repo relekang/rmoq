@@ -45,16 +45,28 @@ class Mock(object):
 
     def activate(self, path=None):
         if path is not None:
-            self.path = path
+            if isinstance(path, six.string_types):
+                self.path = path
 
         def activate(func):
+            if isinstance(func, type):
+                return self._decorate_class(func)
+
             def wrapper(*args, **kwargs):
                 with self:
-                    func(*args, **kwargs)
+                    return func(*args, **kwargs)
 
             return wrapper
 
         return activate
+
+    def _decorate_class(self, cls):
+        for attr in cls.__dict__:
+            if callable(getattr(cls, attr)):
+                print(getattr(cls, attr))
+                setattr(cls, attr, self.activate()(getattr(cls, attr)))
+                print(getattr(cls, attr))
+        return cls
 
     def on_request(self, session, request, *args, **kwargs):
         response_path = os.path.join(os.getcwd(), self.path, self._get_filename(request.url))
