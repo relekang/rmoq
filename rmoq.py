@@ -63,9 +63,7 @@ class Mock(object):
     def _decorate_class(self, cls):
         for attr in cls.__dict__:
             if callable(getattr(cls, attr)):
-                print(getattr(cls, attr))
                 setattr(cls, attr, self.activate()(getattr(cls, attr)))
-                print(getattr(cls, attr))
         return cls
 
     def on_request(self, session, request, *args, **kwargs):
