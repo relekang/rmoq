@@ -1,7 +1,7 @@
 rmoq
 ====
 
-|frigg| |version| |downloads|
+|frigg| |coverage| |version| |downloads|
 
 A simple request mocker that caches requests responses to files.
 
@@ -64,6 +64,9 @@ MIT © Rolf Erik Lekang
 
 
 .. |frigg| image:: https://ci.frigg.io/badges/relekang/rmoq/
+    :target: https://ci.frigg.io/relekang/rmoq/last/
+
+.. |coverage| image:: https://ci.frigg.io/badges/coverage/relekang/rmoq/
     :target: https://ci.frigg.io/relekang/rmoq/last/
 
 .. |version| image:: https://pypip.in/version/rmoq/badge.svg?style=flat
