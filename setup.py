@@ -9,7 +9,7 @@ def read(*parts):
 
 setup(
     name='rmoq',
-    version='0.2.1',
+    version='0.2.3',
     url='http://github.com/relekang/rmoq',
     author='Rolf Erik Lekang',
     author_email='me@rolflekang.com',
@@ -18,7 +18,7 @@ setup(
     py_modules=['rmoq'],
     install_requires=[
         'mock==1.0.1',
-        'six==1.8.0'
+        'six==1.8.0',
         'requests',
     ],
     license='MIT',
