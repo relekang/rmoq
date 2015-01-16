@@ -16,6 +16,11 @@ setup(
     description='A simple request-mocker that will download',
     long_description=read('README.rst'),
     py_modules=['rmoq'],
+    install_requires=[
+        'mock==1.0.1',
+        'six==1.8.0'
+        'requests',
+    ],
     license='MIT',
     include_package_data=True,
     classifiers=[
