@@ -80,3 +80,5 @@ class MockTestCase(unittest.TestCase):
         self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/'), 'rolflekang.com.txt')
         self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/feed.xml'),
                          'rolflekang.com_feed.xml.txt')
+        self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/?get&parameters'),
+                         'rolflekang.com__get_parameters.txt')

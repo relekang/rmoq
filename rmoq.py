@@ -100,7 +100,10 @@ class Mock(object):
 
     @staticmethod
     def _get_filename(url):
-        return '{}.txt'.format(re.sub(r'/$', '', re.sub(r'https?://', '', url)).replace('/', '_'))
+        filename = re.sub(r'/$', '', re.sub(r'https?://', '', url))
+        for character in ['/', '_', '?', '&']:
+            filename = filename.replace(character, '_')
+        return '{}.txt'.format(filename)
 
     @staticmethod
     def _read_body_from_file(path):
