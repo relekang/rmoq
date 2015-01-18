@@ -15,6 +15,12 @@ if six.PY3:
             return value.decode(encoding=encoding, errors=errors)
         return value
 
+    def _read_file(f):
+        content = f.read()
+        content_type = content.split('\n')[0]
+        content = '\n'.join(content.split('\n')[1:])
+        return content_type, content.encode('utf-8', 'replace')
+
 else:
     import mock
     from six import StringIO as BufferIO
@@ -23,6 +29,12 @@ else:
         if isinstance(value, unicode):
             return value.encode(encoding=encoding, errors=errors)
         return unicode(value, errors=errors).encode(encoding=encoding, errors=errors)
+
+    def _read_file(f):
+        content = f.read()
+        content_type = content.split('\n')[0]
+        content = '\n'.join(content.split('\n')[1:])
+        return content_type, content
 
 
 class Mock(object):
@@ -93,10 +105,7 @@ class Mock(object):
     @staticmethod
     def _read_body_from_file(path):
         with open(path) as f:
-            content = f.read()
-            content_type = content.split('\n')[0]
-            content = '\n'.join(content.split('\n')[1:])
-            return content_type, content.encode('utf-8', 'replace')
+            return _read_file(f)
 
     @staticmethod
     def _write_body_to_file(path, content, content_type):
