@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import os
 import re
 import six
@@ -11,19 +10,19 @@ if six.PY3:
     from unittest import mock
     from io import BytesIO as BufferIO
 
-    def prepare_for_write(value, charset='utf-8', errors='ignore'):
+    def prepare_for_write(value, encoding='utf-8', errors='replace'):
         if isinstance(value, bytes):
-            return value.decode('utf-8')
+            return value.decode(encoding=encoding, errors=errors)
         return value
 
 else:
     import mock
     from six import StringIO as BufferIO
 
-    def prepare_for_write(value, charset='utf-8', errors='ignore'):
+    def prepare_for_write(value, encoding='utf-8', errors='replace'):
         if isinstance(value, unicode):
-            return value.encode(charset, errors)
-        return unicode(value, errors=errors).encode(charset)
+            return value.encode(encoding=encoding, errors=errors)
+        return unicode(value, errors=errors).encode(encoding=encoding, errors=errors)
 
 
 class Mock(object):
@@ -97,7 +96,7 @@ class Mock(object):
             content = f.read()
             content_type = content.split('\n')[0]
             content = '\n'.join(content.split('\n')[1:])
-            return content_type, content.encode('utf-8')
+            return content_type, content
 
     @staticmethod
     def _write_body_to_file(path, content, content_type):
