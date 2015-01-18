@@ -96,7 +96,7 @@ class Mock(object):
             content = f.read()
             content_type = content.split('\n')[0]
             content = '\n'.join(content.split('\n')[1:])
-            return content_type, content
+            return content_type, content.encode('utf-8', 'replace')
 
     @staticmethod
     def _write_body_to_file(path, content, content_type):
