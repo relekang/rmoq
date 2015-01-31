@@ -1,5 +1,7 @@
 tasks:
- - tox
+ - tox -e py34
+ - tox -e py27
+ - coverage combine && coverage report -m && coverage xml
  - flake8
 
 coverage:
