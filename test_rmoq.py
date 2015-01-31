@@ -16,7 +16,7 @@ def timer(func, *args):
 
 
 class MockTestCase(unittest.TestCase):
-    def tearDown(self):
+    def tearDown(self):  # noqa
         directories = [os.path.join(os.getcwd(), 'fixtures'), os.path.join(os.getcwd(), 'path')]
         for directory in directories:
             if os.path.exists(directory):
