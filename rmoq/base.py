@@ -4,39 +4,9 @@ import os
 import re
 
 import requests
-import six
 from requests.packages.urllib3 import HTTPResponse
 
-if six.PY3:
-    from unittest import mock
-    from io import BytesIO as BufferIO
-
-    def prepare_for_write(value, encoding='utf-8', errors='replace'):
-        if isinstance(value, bytes):
-            return value.decode(encoding=encoding, errors=errors)
-        return value
-
-    def _read_file(f):
-        content = f.read()
-        content_type = content.split('\n')[0]
-        content = '\n'.join(content.split('\n')[1:])
-        return content_type, content.encode('utf-8', 'replace')
-
-else:
-    import mock
-    from six import StringIO as BufferIO
-    _text_type = unicode  # noqa
-
-    def prepare_for_write(value, encoding='utf-8', errors='replace'):
-        if isinstance(value, _text_type):
-            return value.encode(encoding=encoding, errors=errors)
-        return _text_type(value, errors=errors).encode(encoding=encoding, errors=errors)
-
-    def _read_file(f):
-        content = f.read()
-        content_type = content.split('\n')[0]
-        content = '\n'.join(content.split('\n')[1:])
-        return content_type, content
+from .compat import mock, StringIO, string_types, read_file, prepare_for_write
 
 
 class Mock(object):
@@ -64,7 +34,7 @@ class Mock(object):
 
     def activate(self, path=None):
         if path is not None:
-            if isinstance(path, six.string_types):
+            if isinstance(path, string_types):
                 self.path = path
 
         def activate(func):
@@ -92,7 +62,7 @@ class Mock(object):
             content_type, content = self._read_body_from_file(response_path)
             response = HTTPResponse(
                 status=200,
-                body=BufferIO(content),
+                body=StringIO(content),
                 preload_content=False,
                 headers={'Content-Type': content_type}
             )
@@ -116,7 +86,7 @@ class Mock(object):
     @staticmethod
     def _read_body_from_file(path):
         with open(path) as f:
-            return _read_file(f)
+            return read_file(f)
 
     @staticmethod
     def _write_body_to_file(path, content, content_type):
@@ -127,11 +97,3 @@ class Mock(object):
         with open(path, 'w') as f:
             f.write('{}\n'.format(content_type))
             f.write(prepare_for_write(content))
-
-
-_mock = Mock()
-
-__all__ = []
-for __attr in (a for a in dir(_mock)):
-    __all__.append(__attr)
-    globals()[__attr] = getattr(_mock, __attr)
