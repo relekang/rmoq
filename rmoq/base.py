@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 import ast
 import os
-import re
 
 import requests
 from requests.packages.urllib3 import HTTPResponse
 
-from .compat import mock, StringIO, string_types, read_file, prepare_for_write
+from rmoq.backends import RmoqBackend
+
+from .backends import FileStorageBackend
+from .compat import StringIO, mock, string_types
 
 
 class Mock(object):
-    path = 'fixtures'
 
-    def __init__(self, path=None):
-        if path:
-            self.path = path
+    def __init__(self, prefix='fixtures', backend=FileStorageBackend()):
+        self.prefix = prefix
+        self.backend = backend
 
     def __enter__(self):
         def on_send(session, request, *args, **kwargs):
@@ -32,10 +33,12 @@ class Mock(object):
     def disabled(self):
         return ast.literal_eval(os.environ.get('RMOQ_DISABLED', 'False'))
 
-    def activate(self, path=None):
-        if path is not None:
-            if isinstance(path, string_types):
-                self.path = path
+    def activate(self, prefix=None, backend=None):
+        if isinstance(prefix, string_types):
+            self.prefix = prefix
+
+        if isinstance(backend, RmoqBackend):
+            self.backend = backend
 
         def activate(func):
             if isinstance(func, type):
@@ -56,15 +59,14 @@ class Mock(object):
         return cls
 
     def on_request(self, session, request, *args, **kwargs):
-        response_path = os.path.join(os.getcwd(), self.path, self._get_filename(request.url))
 
-        if os.path.exists(response_path):
-            content_type, content = self._read_body_from_file(response_path)
+        content = self.backend.get(self.prefix, request.url)
+        if content is not None:
             response = HTTPResponse(
                 status=200,
-                body=StringIO(content),
+                body=StringIO(content[1]),
                 preload_content=False,
-                headers={'Content-Type': content_type}
+                headers={'Content-Type': content[0]}
             )
             adapter = session.get_adapter(request.url)
             response = adapter.build_response(request, response)
@@ -72,28 +74,11 @@ class Mock(object):
             self.patch.stop()
             response = requests.get(request.url)
             self.patch.start()
-            self._write_body_to_file(response_path, response.text, response.headers['Content-Type'])
+            self.backend.put(
+                self.prefix,
+                request.url,
+                response.text,
+                response.headers['Content-Type']
+            )
 
         return response
-
-    @staticmethod
-    def _get_filename(url):
-        filename = re.sub(r'/$', '', re.sub(r'https?://', '', url))
-        for character in ['/', '_', '?', '&']:
-            filename = filename.replace(character, '_')
-        return '{}.txt'.format(filename)
-
-    @staticmethod
-    def _read_body_from_file(path):
-        with open(path) as f:
-            return read_file(f)
-
-    @staticmethod
-    def _write_body_to_file(path, content, content_type):
-        directory = os.path.dirname(path)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        with open(path, 'w') as f:
-            f.write('{}\n'.format(content_type))
-            f.write(prepare_for_write(content))

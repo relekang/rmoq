@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 
 import rmoq
+from rmoq.backends import FileStorageBackend
 
 
 def timer(func, *args):
@@ -54,8 +55,8 @@ class MockTestCase(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
         del os.environ['RMOQ_DISABLED']
 
-    def test_rmoq_decorator_with_path(self):
-        @rmoq.activate('path')
+    def test_rmoq_decorator_with_args(self):
+        @rmoq.activate('path', FileStorageBackend())
         def perform_requests():
             requests.get('http://rolflekang.com/feed.xml')
 
@@ -87,10 +88,19 @@ class MockTestCase(unittest.TestCase):
         a.perform_requests()
         self.assertTrue(os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
 
+
+class BackendTestCase(unittest.TestCase):
     def test_get_filename(self):
-        self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com'), 'rolflekang.com.txt')
-        self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/'), 'rolflekang.com.txt')
-        self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/feed.xml'),
-                         'rolflekang.com_feed.xml.txt')
-        self.assertEqual(rmoq.Mock._get_filename('http://rolflekang.com/?get&parameters'),
-                         'rolflekang.com__get_parameters.txt')
+        self.assertEqual(rmoq.RmoqBackend._clean_url('http://rolflekang.com'), 'rolflekang.com')
+        self.assertEqual(rmoq.RmoqBackend._clean_url('http://rolflekang.com/'), 'rolflekang.com')
+        self.assertEqual(
+            rmoq.RmoqBackend._clean_url('http://rolflekang.com/feed.xml'),
+            'rolflekang.com_feed.xml'
+        )
+        self.assertEqual(
+            rmoq.RmoqBackend._clean_url('http://rolflekang.com/?get&parameters'),
+            'rolflekang.com__get_parameters'
+        )
+
+    def test__parse(self):
+        self.assertEqual(rmoq.RmoqBackend._parse('1\n2\n3\n4\n'), ('1', '2\n3\n4\n'))
