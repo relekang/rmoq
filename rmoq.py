@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ast
 import os
 import re
 import six
@@ -48,11 +49,17 @@ class Mock(object):
         def on_send(session, request, *args, **kwargs):
             return self.on_request(session, request, *args, **kwargs)
 
-        self.patch = mock.patch('requests.Session.send', on_send)
-        self.patch.start()
+        if not self.disabled:
+            self.patch = mock.patch('requests.Session.send', on_send)
+            self.patch.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.patch.stop()
+        if not self.disabled:
+            self.patch.stop()
+
+    @property
+    def disabled(self):
+        return ast.literal_eval(os.environ.get('RMOQ_DISABLED', 'False'))
 
     def activate(self, path=None):
         if path is not None:

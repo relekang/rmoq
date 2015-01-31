@@ -58,6 +58,15 @@ The decorator will also work for classes, which means you can decorate a whole t
             assert response.body == 'Example'
 
 
+
+**Disable in one test run**
+Setting the environment variable `RMOQ_DISABLED` to `True` will disable rmoq: ::
+
+    $ RMOQ_DISABLED=True py.test
+
+This can be useful to make sure that the a CI server does not use time on saving new fixtures if you
+are only using fixtures locally.
+
 ----------------------
 
 MIT © Rolf Erik Lekang

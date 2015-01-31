@@ -42,6 +42,17 @@ class MockTestCase(unittest.TestCase):
         perform_requests()
         self.assertTrue(os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
 
+    def test_disabled_by_environ(self):
+        os.environ['RMOQ_DISABLED'] = 'True'
+
+        @rmoq.activate()
+        def perform_requests():
+            requests.get('http://rolflekang.com')
+
+        perform_requests()
+        self.assertFalse(os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
+        del os.environ['RMOQ_DISABLED']
+
     def test_rmoq_decorator_with_path(self):
         @rmoq.activate('path')
         def perform_requests():
