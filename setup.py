@@ -10,7 +10,7 @@ def read(*parts):
 
 setup(
     name='rmoq',
-    version='0.2.5',
+    version='0.3.0',
     url='http://github.com/relekang/rmoq',
     author='Rolf Erik Lekang',
     author_email='me@rolflekang.com',
