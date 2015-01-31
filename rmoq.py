@@ -25,11 +25,12 @@ if six.PY3:
 else:
     import mock
     from six import StringIO as BufferIO
+    _text_type = unicode  # noqa
 
     def prepare_for_write(value, encoding='utf-8', errors='replace'):
-        if isinstance(value, unicode):
+        if isinstance(value, _text_type):
             return value.encode(encoding=encoding, errors=errors)
-        return unicode(value, errors=errors).encode(encoding=encoding, errors=errors)
+        return _text_type(value, errors=errors).encode(encoding=encoding, errors=errors)
 
     def _read_file(f):
         content = f.read()
