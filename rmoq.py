@@ -2,9 +2,9 @@
 import ast
 import os
 import re
-import six
-import requests
 
+import requests
+import six
 from requests.packages.urllib3 import HTTPResponse
 
 if six.PY3:

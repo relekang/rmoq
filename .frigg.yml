@@ -3,6 +3,7 @@ tasks:
  - tox -e py27
  - coverage combine && coverage report -m && coverage xml
  - flake8
+ - isort -c *.py
 
 coverage:
   path: coverage.xml

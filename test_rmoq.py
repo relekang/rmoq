@@ -2,8 +2,9 @@
 import os
 import shutil
 import unittest
-import requests
 from datetime import datetime
+
+import requests
 
 import rmoq
 
