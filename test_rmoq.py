@@ -17,12 +17,15 @@ def timer(func, *args):
     return end_time - start_time, result
 
 
-class MockTestCase(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
     def tearDown(self):  # noqa
         directories = [os.path.join(os.getcwd(), 'fixtures'), os.path.join(os.getcwd(), 'path')]
         for directory in directories:
             if os.path.exists(directory):
                 shutil.rmtree(directory)
+
+
+class MockTestCase(BaseTestCase):
 
     def assert_response(self, response, status_code=200):
         self.assertEqual(response.status_code, status_code)
@@ -89,10 +92,16 @@ class MockTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(os.getcwd(), 'fixtures/rolflekang.com.txt')))
 
 
-class BackendTestCase(unittest.TestCase):
+class BackendTestCase(BaseTestCase):
     def test_get_filename(self):
-        self.assertEqual(rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com'), 'rolflekang.com')
-        self.assertEqual(rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com/'), 'rolflekang.com')
+        self.assertEqual(
+            rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com'),
+            'rolflekang.com'
+        )
+        self.assertEqual(
+            rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com/'),
+            'rolflekang.com'
+        )
         self.assertEqual(
             rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com/feed.xml'),
             'rolflekang.com_feed.xml'
@@ -104,3 +113,22 @@ class BackendTestCase(unittest.TestCase):
 
     def test__parse(self):
         self.assertEqual(rmoq.RmoqStorageBackend._parse('1\n2\n3\n4\n'), ('1', '2\n3\n4\n'))
+
+
+class BackendTestMixin(object):
+    backend = rmoq.RmoqStorageBackend()
+
+    def test_storage(self):
+        self.backend.put('fixtures', 'http://rolflekang.com', '1\n2\n3\n4\n', 'content-type')
+        content = self.backend.get('fixtures', 'http://rolflekang.com')
+        self.assertIsNotNone(content)
+        self.assertEqual(content[1], '1\n2\n3\n4\n')
+        self.assertEqual(content[0], 'content-type')
+
+
+class FileStorageBackendTestCase(BackendTestMixin, BaseTestCase):
+    backend = rmoq.FileStorageBackend()
+
+
+class MemcachedStorageBackendTestCase(BackendTestMixin, BaseTestCase):
+    backend = rmoq.MemcachedStorageBackend(['127.0.0.1:11211'])

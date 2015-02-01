@@ -33,7 +33,10 @@ class RmoqStorageBackend(object):
 
     @staticmethod
     def _parse(content):
-        return content.split('\n')[0], '\n'.join(content.split('\n')[1:])
+        return (
+            compat.make_str(content.split('\n')[0]),
+            compat.make_str('\n'.join(content.split('\n')[1:]))
+        )
 
     @staticmethod
     def clean_url(url, replacement='_'):
@@ -42,10 +45,10 @@ class RmoqStorageBackend(object):
         with the given replacement.
 
         :param url: The url of the request.
-        :param replacement: A string that is used to replace this special characters: /, _, ?, &
+        :param replacement: A string that is used to replace special characters.
         """
         cleaned = re.sub(r'/$', '', re.sub(r'https?://', '', url))
-        for character in ['/', '_', '?', '&']:
+        for character in '/ _ ? & : ; %'.split():
             cleaned = cleaned.replace(character, replacement)
         return cleaned
 
@@ -80,3 +83,28 @@ class FileStorageBackend(RmoqStorageBackend):
         :return: The created path.
         """
         return '{}.txt'.format(os.path.join(os.getcwd(), prefix, self.clean_url(url)))
+
+
+class MemcachedStorageBackend(RmoqStorageBackend):
+    """
+    Storage backend for rmoq that uses memcached for storage. Takes a the same arguments
+    as python-memcached: a list of servers and options as keyword arguments.
+    """
+
+    def __init__(self, servers, **options):
+        import memcache
+
+        self.client = memcache.Client(servers=servers, **options)
+
+    def get(self, prefix, url):
+        return self._parse(self.client.get(self.create_key(prefix, url)))
+
+    def put(self, prefix, url, content, content_type):
+        return self.client.add(
+            self.create_key(prefix, url),
+            '\n'.join([content_type, content]),
+            60 * 60 * 24
+        )
+
+    def create_key(self, *parts):
+        return ''.join([self.clean_url(part, '') for part in parts])

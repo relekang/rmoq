@@ -13,3 +13,7 @@ and implement the :func:`.get` and :func:`.put` methods.
     :undoc-members:
     :show-inheritance:
 
+.. autoclass:: rmoq.MemcachedStorageBackend
+    :members:
+    :undoc-members:
+    :show-inheritance:

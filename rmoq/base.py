@@ -5,10 +5,8 @@ import os
 import requests
 from requests.packages.urllib3 import HTTPResponse
 
-from rmoq.backends import RmoqStorageBackend
-
-from .backends import FileStorageBackend
-from .compat import StringIO, mock, string_types
+from . import compat
+from .backends import FileStorageBackend, RmoqStorageBackend
 
 
 class Mock(object):
@@ -26,7 +24,7 @@ class Mock(object):
             return self.on_request(session, request, *args, **kwargs)
 
         if not self.disabled:
-            self.patch = mock.patch('requests.Session.send', on_send)
+            self.patch = compat.mock.patch('requests.Session.send', on_send)
             self.patch.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -44,7 +42,7 @@ class Mock(object):
         :param prefix:
         :param backend: An instance of a storage backend.
         """
-        if isinstance(prefix, string_types):
+        if isinstance(prefix, compat.string_types):
             self.prefix = prefix
 
         if isinstance(backend, RmoqStorageBackend):
@@ -74,7 +72,7 @@ class Mock(object):
         if content is not None:
             response = HTTPResponse(
                 status=200,
-                body=StringIO(content[1]),
+                body=compat.create_response_body(content[1]),
                 preload_content=False,
                 headers={'Content-Type': content[0]}
             )
