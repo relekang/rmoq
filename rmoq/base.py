@@ -5,13 +5,17 @@ import os
 import requests
 from requests.packages.urllib3 import HTTPResponse
 
-from rmoq.backends import RmoqBackend
+from rmoq.backends import RmoqStorageBackend
 
 from .backends import FileStorageBackend
 from .compat import StringIO, mock, string_types
 
 
 class Mock(object):
+    """
+    The mocker class that mocks requests in rmoq. It supports being used in with-statements
+    and have a method :method:`activate` that can be used as a decorator on functions or classes.
+    """
 
     def __init__(self, prefix='fixtures', backend=FileStorageBackend()):
         self.prefix = prefix
@@ -34,10 +38,16 @@ class Mock(object):
         return ast.literal_eval(os.environ.get('RMOQ_DISABLED', 'False'))
 
     def activate(self, prefix=None, backend=None):
+        """
+        A decorator used to activate the mocker.
+
+        :param prefix:
+        :param backend: An instance of a storage backend.
+        """
         if isinstance(prefix, string_types):
             self.prefix = prefix
 
-        if isinstance(backend, RmoqBackend):
+        if isinstance(backend, RmoqStorageBackend):
             self.backend = backend
 
         def activate(func):

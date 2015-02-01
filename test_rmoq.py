@@ -91,16 +91,16 @@ class MockTestCase(unittest.TestCase):
 
 class BackendTestCase(unittest.TestCase):
     def test_get_filename(self):
-        self.assertEqual(rmoq.RmoqBackend._clean_url('http://rolflekang.com'), 'rolflekang.com')
-        self.assertEqual(rmoq.RmoqBackend._clean_url('http://rolflekang.com/'), 'rolflekang.com')
+        self.assertEqual(rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com'), 'rolflekang.com')
+        self.assertEqual(rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com/'), 'rolflekang.com')
         self.assertEqual(
-            rmoq.RmoqBackend._clean_url('http://rolflekang.com/feed.xml'),
+            rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com/feed.xml'),
             'rolflekang.com_feed.xml'
         )
         self.assertEqual(
-            rmoq.RmoqBackend._clean_url('http://rolflekang.com/?get&parameters'),
+            rmoq.RmoqStorageBackend.clean_url('http://rolflekang.com/?get&parameters'),
             'rolflekang.com__get_parameters'
         )
 
     def test__parse(self):
-        self.assertEqual(rmoq.RmoqBackend._parse('1\n2\n3\n4\n'), ('1', '2\n3\n4\n'))
+        self.assertEqual(rmoq.RmoqStorageBackend._parse('1\n2\n3\n4\n'), ('1', '2\n3\n4\n'))
