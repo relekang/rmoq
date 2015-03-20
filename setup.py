@@ -19,7 +19,7 @@ setup(
     py_modules=['rmoq'],
     install_requires=[
         'mock==1.0.1',
-        'six==1.8.0',
+        'six==1.9.0',
         'requests',
     ],
     license='MIT',
