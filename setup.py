@@ -1,7 +1,7 @@
 import codecs
 from os import path
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(*parts):
@@ -16,7 +16,7 @@ setup(
     author_email='me@rolflekang.com',
     description='A simple request-mocker that will download',
     long_description=read('README.rst'),
-    py_modules=['rmoq'],
+    packages=find_packages(exclude='tests'),
     install_requires=[
         'mock==1.0.1',
         'six==1.9.0',
