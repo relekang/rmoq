@@ -1,9 +1,12 @@
 tasks:
+ - tox -e flake8
+ - tox -e isort
  - tox -e py34
  - tox -e py27
  - coverage combine && coverage report -m && coverage xml
- - flake8
- - isort -c *.py
+
+services:
+ - memcached
 
 coverage:
   path: coverage.xml
