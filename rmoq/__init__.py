@@ -2,10 +2,12 @@
 from .base import Mock
 from rmoq.backends import FileStorageBackend, RmoqStorageBackend, MemcachedStorageBackend
 
+__version__ = '0.4.1'
 
 _mock = Mock()
 
 __all__ = [
+    __version__,
     RmoqStorageBackend,
     FileStorageBackend,
     MemcachedStorageBackend,
