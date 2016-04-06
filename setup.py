@@ -33,7 +33,7 @@ setup(
     long_description=read('README.rst'),
     packages=find_packages(exclude='tests'),
     install_requires=[
-        'mock==1.3.0',
+        'mock==2.0.0',
         'six==1.10.0',
         'requests',
     ],
