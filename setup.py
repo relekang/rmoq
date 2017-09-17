@@ -34,7 +34,7 @@ setup(
     packages=find_packages(exclude='tests'),
     install_requires=[
         'mock==2.0.0',
-        'six==1.10.0',
+        'six==1.11.0',
         'requests',
     ],
     license='MIT',
