@@ -37,11 +37,11 @@ MIT © Rolf Erik Lekang
 .. |coverage| image:: https://ci.frigg.io/badges/coverage/relekang/rmoq/
     :target: https://ci.frigg.io/relekang/rmoq/last/
 
-.. |version| image:: https://pypip.in/version/rmoq/badge.svg?style=flat
+.. |version| image:: https://img.shields.io/pypi/v/rmoq.svg?style=flat
     :target: https://pypi.python.org/pypi/rmoq/
     :alt: Latest Version
 
-.. |downloads| image:: https://pypip.in/download/rmoq/badge.svg?style=flat
+.. |downloads| image:: https://img.shields.io/pypi/dm/rmoq.svg?style=flat
     :target: https://pypi.python.org/pypi/rmoq/
     :alt: Downloads
 
