@@ -2,7 +2,7 @@
 from .base import Mock
 from rmoq.backends import FileStorageBackend, RmoqStorageBackend, MemcachedStorageBackend
 
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 
 _mock = Mock()
 
