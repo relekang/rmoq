@@ -30,3 +30,11 @@ jobs:
 
     - name: Run tests
       run: pytest
+
+    - name: Python Semantic Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: relekang/python-semantic-release@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        repository_username: __token__
+        repository_password: ${{ secrets.PYPI_TOKEN }}
