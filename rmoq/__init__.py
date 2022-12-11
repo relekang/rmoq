@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from .base import Mock
-from rmoq.backends import FileStorageBackend, RmoqStorageBackend, MemcachedStorageBackend
+from rmoq.backends import FileStorageBackend, MemcachedStorageBackend, RmoqStorageBackend
 
-__version__ = '0.4.2'
+from .base import Mock
+
+__version__ = "0.4.2"
 
 _mock = Mock()
 

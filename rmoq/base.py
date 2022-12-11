@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 import ast
 import os
+from io import BytesIO
+from unittest import mock
 
 import requests
 from requests.packages.urllib3 import HTTPResponse
 
-from . import compat
 from .backends import FileStorageBackend, RmoqStorageBackend
+
+
+def create_response_body(content):
+    return BytesIO(content.encode(encoding="utf-8", errors="replace"))
 
 
 class Mock(object):
@@ -15,7 +20,7 @@ class Mock(object):
     and have a method :method:`activate` that can be used as a decorator on functions or classes.
     """
 
-    def __init__(self, prefix='fixtures', backend=FileStorageBackend()):
+    def __init__(self, prefix="fixtures", backend=FileStorageBackend()):
         self.prefix = prefix
         self.backend = backend
 
@@ -24,7 +29,7 @@ class Mock(object):
             return self.on_request(session, request, *args, **kwargs)
 
         if not self.disabled:
-            self.patch = compat.mock.patch('requests.Session.send', on_send)
+            self.patch = mock.patch("requests.Session.send", on_send)
             self.patch.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -33,7 +38,7 @@ class Mock(object):
 
     @property
     def disabled(self):
-        return ast.literal_eval(os.environ.get('RMOQ_DISABLED', 'False'))
+        return ast.literal_eval(os.environ.get("RMOQ_DISABLED", "False"))
 
     def activate(self, prefix=None, backend=None):
         """
@@ -42,7 +47,7 @@ class Mock(object):
         :param prefix:
         :param backend: An instance of a storage backend.
         """
-        if isinstance(prefix, compat.string_types):
+        if isinstance(prefix, str):
             self.prefix = prefix
 
         if isinstance(backend, RmoqStorageBackend):
@@ -67,14 +72,13 @@ class Mock(object):
         return cls
 
     def on_request(self, session, request, *args, **kwargs):
-
         content = self.backend.get(self.prefix, request.url)
         if content is not None:
             response = HTTPResponse(
                 status=200,
-                body=compat.create_response_body(content[1]),
+                body=create_response_body(content[1]),
                 preload_content=False,
-                headers={'Content-Type': content[0]}
+                headers={"Content-Type": content[0]},
             )
             adapter = session.get_adapter(request.url)
             response = adapter.build_response(request, response)
@@ -86,7 +90,7 @@ class Mock(object):
                 self.prefix,
                 request.url,
                 response.text,
-                response.headers['Content-Type']
+                response.headers.get("Content-Type"),
             )
 
         return response

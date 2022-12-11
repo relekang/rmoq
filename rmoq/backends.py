@@ -2,7 +2,22 @@
 import os
 import re
 
-from . import compat
+
+def make_str(value, encoding="utf-8", errors="replace"):
+    if isinstance(value, bytes):
+        return value.decode(encoding=encoding, errors=errors)
+    return str(value)
+
+
+def prepare_for_write(value):
+    return make_str(value)
+
+
+def read_file(f):
+    content = f.read()
+    content_type = content.split("\n")[0]
+    content = "\n".join(content.split("\n")[1:])
+    return content_type, content
 
 
 class RmoqStorageBackend(object):
@@ -34,12 +49,12 @@ class RmoqStorageBackend(object):
     @staticmethod
     def _parse(content):
         return (
-            compat.make_str(content.split('\n')[0]),
-            compat.make_str('\n'.join(content.split('\n')[1:]))
+            make_str(content.split("\n")[0]),
+            make_str("\n".join(content.split("\n")[1:])),
         )
 
     @staticmethod
-    def clean_url(url, replacement='_'):
+    def clean_url(url, replacement="_"):
         """
         Cleans the url for protocol prefix and trailing slash and replaces special characters
         with the given replacement.
@@ -47,8 +62,8 @@ class RmoqStorageBackend(object):
         :param url: The url of the request.
         :param replacement: A string that is used to replace special characters.
         """
-        cleaned = re.sub(r'/$', '', re.sub(r'https?://', '', url))
-        for character in '/ _ ? & : ; %'.split():
+        cleaned = re.sub(r"/$", "", re.sub(r"https?://", "", url))
+        for character in "/ _ ? & : ; %".split():
             cleaned = cleaned.replace(character, replacement)
         return cleaned
 
@@ -63,7 +78,7 @@ class FileStorageBackend(RmoqStorageBackend):
         filename = self.get_filename(prefix, url)
         if os.path.exists(filename):
             with open(filename) as f:
-                return compat.read_file(f)
+                return read_file(f)
 
     def put(self, prefix, url, content, content_type):
         filename = self.get_filename(prefix, url)
@@ -71,8 +86,8 @@ class FileStorageBackend(RmoqStorageBackend):
         if not os.path.exists(os.path.dirname(filename)):
             os.makedirs(os.path.dirname(filename))
 
-        with open(filename, mode='w') as f:
-            f.writelines([content_type, '\n', compat.prepare_for_write(content)])
+        with open(filename, mode="w") as f:
+            f.writelines([content_type, "\n", prepare_for_write(content)])
 
     def get_filename(self, prefix, url):
         """
@@ -82,7 +97,7 @@ class FileStorageBackend(RmoqStorageBackend):
         :param url: The url of the request.
         :return: The created path.
         """
-        return '{}.txt'.format(os.path.join(os.getcwd(), prefix, self.clean_url(url)))
+        return "{}.txt".format(os.path.join(os.getcwd(), prefix, self.clean_url(url)))
 
 
 class MemcachedStorageBackend(RmoqStorageBackend):
@@ -102,9 +117,9 @@ class MemcachedStorageBackend(RmoqStorageBackend):
     def put(self, prefix, url, content, content_type):
         return self.client.add(
             self.create_key(prefix, url),
-            '\n'.join([content_type, content]),
-            60 * 60 * 24
+            "\n".join([content_type, content]),
+            60 * 60 * 24,
         )
 
     def create_key(self, *parts):
-        return ''.join([self.clean_url(part, '') for part in parts])
+        return "".join([self.clean_url(part, "") for part in parts])
